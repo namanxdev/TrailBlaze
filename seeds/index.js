@@ -19,10 +19,15 @@ const SeedDB = async ()=>{
     console.log('Deleted Old data');
     
     for (let i = 0; i < 50; i++) {
-        const random1000 = Math.floor(Math.random()*1000)
+        const random1000 = Math.floor(Math.random()*1000);
+        const price = Math.floor(Math.random()*20)+10;
         const c = new Campground({
             location:`${cities[random1000].city} ,${cities[random1000].state}`,
-            title:`${sample(descriptors)} ${sample(places)}`
+            title:`${sample(descriptors)} ${sample(places)}`,
+            // Random image generated
+            image:`https://picsum.photos/400?random=${Math.random()}`,
+            description:'Escape the hustle and bustle of everyday life and immerse yourself in the serene beauty',
+            price
         })
         await c.save();
         
