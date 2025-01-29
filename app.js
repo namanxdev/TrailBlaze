@@ -3,9 +3,29 @@ const mongoose = require('mongoose')
 const path = require('path');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
+const {CampgroundSchema} = require('./Schema')
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
+const campground = require('./models/campground');
+
+
+
+// Validation on server-side of website
+const ValidateCampground = (req,res,next)=>{
+    // if(!req.body.campground) throw new ExpressError('Invalid data!!',400)
+    // This is not Mongooose schema
+    const {error }= CampgroundSchema.validate(req.body);
+    // console.log(result);
+    if(error){
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg,400)
+    }else{
+        next();
+    }
+    
+}
+
 
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
@@ -43,9 +63,8 @@ app.get('/campgrounds/new',(req,res)=>{
     res.render('campgrounds/new');
 });
 // app.all(/(.*)/, (req, res, next) => {
-app.post('/campgrounds',catchAsync(async(req,res,next)=>{
+app.post('/campgrounds',ValidateCampground,catchAsync(async(req,res,next)=>{
 
-    if(!req.body.campground) throw new ExpressError('Invalid data!!',400)
     const newCampground = new Campground(req.body.campground);
     await newCampground.save();
     res.redirect(`/campgrounds/${newCampground._id}`);
@@ -64,7 +83,7 @@ app.get('/campgrounds/:id/edit',catchAsync(async(req,res)=>{
 }));
 
 
-app.put('/campgrounds/:id',catchAsync(async(req,res)=>{
+app.put('/campgrounds/:id',ValidateCampground,catchAsync(async(req,res)=>{
     const {id} = req.params;
     const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground});
     res.redirect(`/campgrounds/${campground._id}`);
