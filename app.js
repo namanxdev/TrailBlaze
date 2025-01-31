@@ -7,6 +7,7 @@ const {CampgroundSchema} = require('./Schema')
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
+const Review = require('./models/review');
 const campground = require('./models/campground');
 
 
@@ -94,6 +95,17 @@ app.delete('/campgrounds/:id',catchAsync(async(req,res)=>{
     await Campground.findByIdAndDelete(id);
     res.redirect(`/campgrounds`);
 }));
+
+// Reviews APIs
+
+app.post('/campgrounds/:id/review',catchAsync(async(req,res)=>{
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`)
+}))
 
 // Error Handling
 
