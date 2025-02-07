@@ -7,11 +7,14 @@ const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
 const Session = require('express-session');
 const flash = require('connect-flash');
-
+const Passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/User');
 
 // Routes
-const campgrounds = require('./routes/campground');
-const reviews  = require('./routes/reviews');
+const campgroundRoutes = require('./routes/campground');
+const reviewsRoutes  = require('./routes/reviews');
+const UserRoutes = require('./routes/User'); 
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
 
@@ -44,6 +47,16 @@ const sessionConfig = {
 app.use(Session(sessionConfig));
 app.use(flash())
 
+
+app.use(Passport.initialize());
+app.use(Passport.session());
+Passport.use(new LocalStrategy(User.authenticate()));
+
+// How to do you store data in particular session
+Passport.serializeUser(User.serializeUser());
+Passport.deserializeUser(User.deserializeUser())
+
+
 // MiddleWare to handle flash
 app.use((req,res,next)=>{
     res.locals.success = req.flash('success');
@@ -63,12 +76,19 @@ app.use(methodOverride('_method'));
 
 // Using Routes
 
-app.use('/campgrounds',campgrounds);
-app.use('/campgrounds/:id/reviews',reviews);
+app.use('/',UserRoutes);
+app.use('/campgrounds',campgroundRoutes);
+app.use('/campgrounds/:id/reviews',reviewsRoutes);
 
 app.get('/',(req,res)=>{
     res.render('home')
 });
+
+app.get('/fakeuser',async (req,res)=>{
+    const user = new User({email:'cutiehie@gmail.com',username:'Hiee'})
+    const newUser = await User.register(user,'chicken'); // password
+    res.send(newUser);
+})
 
 // Error Handling
 
