@@ -25,7 +25,12 @@ router.post('/',isLoggedIn,ValidateCampground,catchAsync(async(req,res,next)=>{
 router.get('/:id',catchAsync(async(req,res)=>{
 
     const {id} = req.params
-    const foundCamp = await Campground.findById(id).populate('reviews').populate('author');
+    const foundCamp = await Campground.findById(id).populate(
+    {   path:'reviews',
+        populate:{
+            path:'author' // author of reviews
+        }
+    }).populate('author'); // author of campground
     console.log(foundCamp);
     
     if(!foundCamp){

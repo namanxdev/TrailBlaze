@@ -3,6 +3,7 @@
 const {CampgroundSchema,reviewSchema} = require('./Schema')
 const ExpressError = require('./utils/ExpressError');
 const Campground = require('./models/campground');
+const Review = require('./models/review');
 
 
 module.exports.storeReturnTo = (req, res, next) => {
@@ -47,6 +48,15 @@ module.exports.IsAuthor = async(req,res,next)=>{
     next();
 }
 
+module.exports.IsReviewAuthor = async(req,res,next)=>{
+    const {id,reviewId} = req.params
+    const review = await Review.findById(reviewId);
+    if(!review.author.equals(req.user._id)){
+        req.flash('error','You do not have Permission to do it')
+        return res.redirect(`/campgrounds/${id}`);
+    }
+    next();
+}
 
 // Validation on server-side of website (Reviews)
 module.exports.ValidateReview = (req, res, next) => {
