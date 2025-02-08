@@ -2,25 +2,7 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const Campground = require('../models/campground');
-const {CampgroundSchema} = require('../Schema')
-const {isLoggedIn} = require('../middleware');
-const ExpressError = require('../utils/ExpressError');
-
-
-// Validation on server-side of website (Campground)
-const ValidateCampground = (req,res,next)=>{
-    // if(!req.body.campground) throw new ExpressError('Invalid data!!',400)
-    // This is not Mongooose schema
-    const {error }= CampgroundSchema.validate(req.body);
-    // console.log(result);
-    if(error){
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg,400)
-    }else{
-        next();
-    }
-    
-}
+const {isLoggedIn,ValidateCampground,IsAuthor} = require('../middleware');
 
 router.get('/',catchAsync(async(req,res)=>{
     const campgrounds = await Campground.find({});
@@ -34,6 +16,7 @@ router.get('/new',isLoggedIn,(req,res)=>{
 router.post('/',isLoggedIn,ValidateCampground,catchAsync(async(req,res,next)=>{
     
     const newCampground = new Campground(req.body.campground);
+    newCampground.author = req.user._id;
     await newCampground.save();
     req.flash('success','Successfully Made a New Campground!!') 
     res.redirect(`/campgrounds/${newCampground._id}`);
@@ -42,7 +25,9 @@ router.post('/',isLoggedIn,ValidateCampground,catchAsync(async(req,res,next)=>{
 router.get('/:id',catchAsync(async(req,res)=>{
 
     const {id} = req.params
-    const foundCamp = await Campground.findById(id).populate('reviews');
+    const foundCamp = await Campground.findById(id).populate('reviews').populate('author');
+    console.log(foundCamp);
+    
     if(!foundCamp){
         req.flash('error','Cannot find that camp ground!');
         return res.redirect('/campgrounds');
@@ -50,7 +35,7 @@ router.get('/:id',catchAsync(async(req,res)=>{
     res.render('campgrounds/show',{campground:foundCamp,msg:req.flash('success')});
 }));
 
-router.get('/:id/edit',isLoggedIn,catchAsync(async(req,res)=>{
+router.get('/:id/edit',isLoggedIn,IsAuthor,catchAsync(async(req,res)=>{
     const {id} = req.params
     const foundCamp = await Campground.findById(id);
     if(!foundCamp){
@@ -61,7 +46,7 @@ router.get('/:id/edit',isLoggedIn,catchAsync(async(req,res)=>{
 }));
 
 
-router.put('/:id',isLoggedIn,ValidateCampground,catchAsync(async(req,res)=>{
+router.put('/:id',isLoggedIn,IsAuthor,ValidateCampground,catchAsync(async(req,res)=>{
     const {id} = req.params;
     const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground});
     req.flash('success','Successfully Updated a Campground!!')

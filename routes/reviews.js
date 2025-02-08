@@ -6,20 +6,9 @@ const ExpressError = require('../utils/ExpressError');
 
 const Campground = require('../models/campground');
 const Review = require('../models/review'); // Corrected import
+const {ValidateReview} = require('../middleware')
 
 
-const { reviewSchema } = require('../Schema');
-
-// Validation on server-side of website (Reviews)
-const ValidateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-};
 
 // Reviews API
 router.post('/', ValidateReview, catchAsync(async (req, res) => {
