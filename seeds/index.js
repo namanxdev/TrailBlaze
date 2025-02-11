@@ -26,7 +26,18 @@ const SeedDB = async ()=>{
             location:`${cities[random1000].city} ,${cities[random1000].state}`,
             title:`${sample(descriptors)} ${sample(places)}`,
             // Random image generated
-            image:`https://picsum.photos/400?random=${Math.random()}`,
+            // image:`https://picsum.photos/400?random=${Math.random()}`,
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/dvojeb6qj/image/upload/v1739295067/YelpCamp/pob24k0iahfclmj18mnz.jpg',
+                    filename: 'YelpCamp/pob24k0iahfclmj18mnz'
+                    
+                },
+                {
+                    url: 'https://res.cloudinary.com/dvojeb6qj/image/upload/v1739295071/YelpCamp/zh5ooceukpb596caujc2.jpg',
+                    filename: 'YelpCamp/zh5ooceukpb596caujc2'
+                }
+            ],
             description:'Escape the hustle and bustle of everyday life and immerse yourself in the serene beauty',
             price
         })
