@@ -1,5 +1,6 @@
-const campground = require('../models/campground');
 const Campground = require('../models/campground');
+const {cloudinary} = require("../cloudinary")
+
 
 module.exports.index = async(req,res)=>{
     const campgrounds = await Campground.find({});
@@ -12,6 +13,10 @@ module.exports.renderNewForm = (req,res)=>{
 
 module.exports.createCampground = async(req,res,next)=>{
     
+    if (req.files.length > 10) {
+        req.flash('error', 'Maximum 10 images allowed per campground');
+        return res.redirect('/campgrounds/new');
+    }
     
     const newCampground = new Campground(req.body.campground);
     newCampground.images = req.files.map(f=>({url:f.path,filename:f.filename}));
@@ -51,12 +56,43 @@ module.exports.renderEditForm = async(req,res)=>{
     res.render('campgrounds/edit',{campground:foundCamp})
 }
 
-module.exports.updateCampground = async(req,res)=>{
-    const {id} = req.params;
-    const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground});
-    req.flash('success','Successfully Updated a Campground!!')
+module.exports.updateCampground = async (req, res) => {
+    const { id } = req.params;
+    console.log(req.body);
+    
+    // Find and update campground
+    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+    if (!campground) {
+        req.flash('error', 'Campground not found!');
+        return res.redirect('/campgrounds');
+    }
+
+    // Validate total image count on update
+    const totalImages = campground.images.length + req.files.length;
+    if (totalImages > 10) {
+        req.flash('error', 'Maximum 10 images allowed (including existing ones)');
+        return res.redirect(`/campgrounds/${id}/edit`);
+    }
+    // Process uploaded images
+    const img = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        if (img.length > 0) {
+        campground.images.push(...img);
+        await campground.save();  
+    }
+
+    if(req.body.deleteImages){
+        for(let filename of req.body.deleteImages){
+            await cloudinary.uploader.destroy(filename);
+        }
+        
+        await campground.updateOne({$pull:{images:{filename:{$in:req.body.deleteImages}}}})
+        console.log(campground);
+        
+    }
+    req.flash('success', 'Successfully Updated a Campground!!');
     res.redirect(`/campgrounds/${campground._id}`);
-}
+};
+
 
 
 module.exports.DeleteCampground = async(req,res)=>{
