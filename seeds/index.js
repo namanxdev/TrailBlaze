@@ -18,7 +18,7 @@ const SeedDB = async ()=>{
     await Campground.deleteMany({}); // deletes everything
     console.log('Deleted Old data');
     
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 300; i++) {
         const random1000 = Math.floor(Math.random()*1000);
         const price = Math.floor(Math.random()*20)+10;
         const c = new Campground({
@@ -27,6 +27,13 @@ const SeedDB = async ()=>{
             title:`${sample(descriptors)} ${sample(places)}`,
             // Random image generated
             // image:`https://picsum.photos/400?random=${Math.random()}`,
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    cities[random1000].longitude,
+                    cities[random1000].latitude,
+                ]
+            },
             images: [
                 {
                     url: 'https://res.cloudinary.com/dvojeb6qj/image/upload/v1739295067/YelpCamp/pob24k0iahfclmj18mnz.jpg',
@@ -44,9 +51,11 @@ const SeedDB = async ()=>{
         await c.save();
         
     }
-    console.log("Save 50 new cities");
+    console.log("Save 300 new cities");
     
 
 }
 
-SeedDB();
+SeedDB().then(()=>{
+    mongoose.connection.close();
+});

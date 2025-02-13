@@ -1,9 +1,11 @@
 const Campground = require('../models/campground');
 const {cloudinary} = require("../cloudinary")
-
+const maptilerClient = require("@maptiler/client");
+maptilerClient.config.apiKey = process.env.MAPTILER_API_KEY;
 
 module.exports.index = async(req,res)=>{
-    const campgrounds = await Campground.find({});
+    const campgrounds = await Campground.find({})
+    // .populate('popupText');
     res.render('campgrounds/index.ejs',{campgrounds})
 }
 
@@ -17,8 +19,11 @@ module.exports.createCampground = async(req,res,next)=>{
         req.flash('error', 'Maximum 10 images allowed per campground');
         return res.redirect('/campgrounds/new');
     }
+
+    const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
     
     const newCampground = new Campground(req.body.campground);
+    newCampground.geometry = geoData.features[0].geometry;
     newCampground.images = req.files.map(f=>({url:f.path,filename:f.filename}));
     newCampground.author = req.user._id;
     await newCampground.save();
@@ -62,6 +67,10 @@ module.exports.updateCampground = async (req, res) => {
     
     // Find and update campground
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+
+    const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
+    campground.geometry = geoData.features[0].geometry;
+
     if (!campground) {
         req.flash('error', 'Campground not found!');
         return res.redirect('/campgrounds');
