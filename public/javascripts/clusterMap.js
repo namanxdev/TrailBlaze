@@ -1,7 +1,7 @@
 maptilersdk.config.apiKey = maptilerApiKey;
 
 const map = new maptilersdk.Map({
-    container: 'map',// container's id or the HTML element in which SDK will render the map
+    container: 'cluster-map',// container's id or the HTML element in which SDK will render the map
     style: maptilersdk.MapStyle.BRIGHT,
     center: [-103.59179687498357, 40.66995747013945],// starting position [lng, lat] America
     // center: [77.2090, 28.6139], // New Delhi, India [longitude, latitude] 

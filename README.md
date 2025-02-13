@@ -1,6 +1,6 @@
-# YelpCamp - Campgrounds Web Application
+# TrailBlaze - Campgrounds Web Application
 
-YelpCamp is a full-stack web application that allows users to create, edit, delete, and review campgrounds. It includes user authentication, image uploads, and flash messaging.
+TrailBlaze is a full-stack web application that allows users to create, edit, delete, and review campgrounds. It includes user authentication, image uploads, and flash messaging.
 
 ## 📌 Features
 - ✅ **User Authentication** – Sign up, login, and logout using Passport.js
@@ -62,6 +62,4 @@ This project includes custom error handling for:
 ## 📌 Future Improvements
 - Deploy to Heroku / Vercel
 - Use MongoDB Atlas for a cloud database
-- Improve UI with Tailwind CSS or Bootstrap 5
-- Add Google Maps API for campground locations
 - Add a messaging system between users
