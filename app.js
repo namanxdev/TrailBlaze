@@ -50,7 +50,7 @@ const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60, // time period in seconds (24 hours)
     crypto: {
-        secret: 'thisshouldbeabettersecret!'
+        secret: process.env.SECRET
     }
 });
 
@@ -62,7 +62,7 @@ store.on("error", function(e){
 const sessionConfig = {
     store,
     name:'session', 
-    secret:'thisshouldbebettersecret',
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     // store: eventually i will make it mongo store not local storage
