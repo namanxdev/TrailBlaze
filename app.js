@@ -17,8 +17,10 @@ const Passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/User');
 const Helmet = require('helmet')
-const dbUrl = process.env.DB_URL ;
 
+const MongoStore = require('connect-mongo'); // for storing mongo session in mongoDB
+// const dbUrl = 'mongodb://localhost:27017/yelp-camp' ;
+const dbUrl = process.env.DB_URL ;
 
 const mongoSanitize = require('express-mongo-sanitize');
 
@@ -27,7 +29,7 @@ const campgroundRoutes = require('./routes/campground');
 const reviewsRoutes  = require('./routes/reviews');
 const UserRoutes = require('./routes/User'); 
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp')
+mongoose.connect(dbUrl)
 
 const db = mongoose.connection;
 db.on('error',console.error.bind(console,'Connection Error:'));
@@ -44,9 +46,21 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }))
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60, // time period in seconds (24 hours)
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+
+store.on("error", function(e){
+    console.log("Session Store Error",e);
+})
 
 // Session & Flash
 const sessionConfig = {
+    store,
     name:'session', 
     secret:'thisshouldbebettersecret',
     resave:false,
@@ -56,7 +70,7 @@ const sessionConfig = {
     cookie:{
         httpOnly:true,// Ensures the cookie is sent only over HTTP(S) and not accessible via client-side JavaScript
         //secure:true, // Ensures the cookie is sent only over HTTPS not work on localhost
-        expires: Date.now() + 1000*60*60*24*7, // after a week
+        expires: Date.now() + 1000*60*60*24*7, // after a week milliseconds
         maxAge:1000*60*60*24*7
     }
 }

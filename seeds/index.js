@@ -1,9 +1,11 @@
+require('dotenv').config(); // Load environment variables from .env
 const mongoose = require('mongoose');
 const Campground = require('../models/campground');
 const cities = require('./cities');
 const {places,descriptors} = require('./seedHelpers')
+const dbUrl = process.env.DB_URL ;
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp')
+mongoose.connect(dbUrl)
 
 const db = mongoose.connection;
 db.on('error',console.error.bind(console,'Connection Error:'));
@@ -22,7 +24,7 @@ const SeedDB = async ()=>{
         const random1000 = Math.floor(Math.random()*1000);
         const price = Math.floor(Math.random()*20)+10;
         const c = new Campground({
-            author:'67a63e0618b74ba0d2560540',
+            author:'67af4056616d5adeac1b38fc',
             location:`${cities[random1000].city} ,${cities[random1000].state}`,
             title:`${sample(descriptors)} ${sample(places)}`,
             // Random image generated

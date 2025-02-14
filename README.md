@@ -8,17 +8,23 @@ TrailBlaze is a full-stack web application that allows users to create, edit, de
 - ✅ **Review System** – Users can leave reviews for campgrounds
 - ✅ **Flash Messages** – Display success/error messages to users
 - ✅ **Image Uploads** – Upload multiple images using Multer & Cloudinary
-- ✅ **Secure Sessions** – Sessions stored using Express-session
+- ✅ **Secure Sessions** – Sessions stored using Express-session & MongoDB
 - ✅ **Error Handling** – Custom error handling middleware
 - ✅ **MongoDB Integration** – Data stored in MongoDB using Mongoose
+- ✅ **Security Enhancements** – Helmet & Mongo-sanitize implemented
+- ✅ **Map Integration** – Campgrounds displayed using MapTiler API
+- ✅ **Cloud Database** – MongoDB Atlas used for cloud storage
+- ✅ **Deployment** – Hosted on Render
 
 ## 🛠 Technologies Used
 - **Backend:** Node.js, Express.js
 - **Frontend:** EJS, Bootstrap 5
-- **Database:** MongoDB & Mongoose
+- **Database:** MongoDB & Mongoose (MongoDB Atlas)
 - **Authentication:** Passport.js & Express-session
 - **File Uploads:** Multer & Cloudinary
-- **Middleware:** Method-Override, Flash Messages
+- **Middleware:** Method-Override, Flash Messages, Helmet, Mongo-sanitize
+- **Map API:** MapTiler
+- **Deployment:** Render
 
 ## 📂 Project Structure
 ```
@@ -40,11 +46,15 @@ yelp-camp/
 - **3.Upload Images**
 - **4.Edit or Delete Your Campgrounds**
 - **5.Leave Reviews on Campgrounds**
-- **6.Logout**
+- **6.View Campgrounds on a Map**
+- **7.Logout**
 
 ## 📸 Image Uploads
 - Image uploads are handled using Multer & Cloudinary.
 - You can upload multiple images when creating or editing a campground.
+
+## 🗺️ Map Integration
+- MapTiler API is used to display campgrounds on an interactive map.
 
 ## 🔒 Authentication & Authorization
 - Users must sign up or log in to create/edit campgrounds.
@@ -53,13 +63,10 @@ yelp-camp/
 
 ## ⚠️ Error Handling
 This project includes custom error handling for:
-
 - Page Not Found (404)
 - Unauthorized Actions
 - Server Errors
 - If an error occurs, users are redirected to an error page with a message.
 
 ## 📌 Future Improvements
-- Deploy to Heroku / Vercel
-- Use MongoDB Atlas for a cloud database
 - Add a messaging system between users
