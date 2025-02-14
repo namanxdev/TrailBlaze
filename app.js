@@ -1,3 +1,9 @@
+if(process.env.NODE_ENV !== 'production'){
+    require('dotenv').config();
+}
+
+// require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose')
@@ -10,6 +16,11 @@ const flash = require('connect-flash');
 const Passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/User');
+const Helmet = require('helmet')
+const dbUrl = process.env.DB_URL ;
+
+
+const mongoSanitize = require('express-mongo-sanitize');
 
 // Routes
 const campgroundRoutes = require('./routes/campground');
@@ -28,10 +39,15 @@ db.once('open',()=>{
 // Needed for parsing of req.body
 app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
+// To remove data using these defaults:
+app.use(mongoSanitize({
+    replaceWith: '_'
+}))
 
 
 // Session & Flash
 const sessionConfig = {
+    name:'session', 
     secret:'thisshouldbebettersecret',
     resave:false,
     saveUninitialized:true,
@@ -39,6 +55,7 @@ const sessionConfig = {
 
     cookie:{
         httpOnly:true,// Ensures the cookie is sent only over HTTP(S) and not accessible via client-side JavaScript
+        //secure:true, // Ensures the cookie is sent only over HTTPS not work on localhost
         expires: Date.now() + 1000*60*60*24*7, // after a week
         maxAge:1000*60*60*24*7
     }
@@ -46,6 +63,49 @@ const sessionConfig = {
 
 app.use(Session(sessionConfig));
 app.use(flash())
+app.use(Helmet());
+
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", 
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", 
+];
+const connectSrcUrls = [
+    "https://api.maptiler.com/", 
+];
+const fontSrcUrls = [];
+
+app.use(
+    Helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`, // Your Cloudinary account
+                "https://images.unsplash.com/",
+                "https://api.maptiler.com/", // MapTiler image tiles
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
 
 
 app.use(Passport.initialize());
@@ -59,6 +119,7 @@ Passport.deserializeUser(User.deserializeUser())
 
 // MiddleWare to handle flash
 app.use((req,res,next)=>{
+    // console.log(req.query);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
