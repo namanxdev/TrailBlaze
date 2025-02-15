@@ -20,9 +20,8 @@ const User = require('./models/User');
 const Helmet = require('helmet')
 
 const MongoStore = require('connect-mongo'); // for storing mongo session in mongoDB
-const dbUrl = 'mongodb://localhost:27017/yelp-camp' ;
-// const dbUrl = process.env.DB_URL ;
-
+// const dbUrl = 'mongodb://localhost:27017/yelp-camp' ;
+const dbUrl = process.env.DB_URL ;
 const mongoSanitize = require('express-mongo-sanitize');
 
 // Routes
