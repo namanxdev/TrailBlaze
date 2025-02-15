@@ -1,0 +1,25 @@
+.google-btn {
+    display: flex; /* Make it a flex container */
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Take full width */
+    max-width: 300px; /* Optional: Set a max width */
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border: 1px solid #dfdfdf;
+    border-radius: 4px;
+    color: #333333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.google-btn img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+.google-btn:hover {
+    background-color: #f1f1f1;
+}

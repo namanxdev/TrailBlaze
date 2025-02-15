@@ -15,12 +15,13 @@ const Session = require('express-session');
 const flash = require('connect-flash');
 const Passport = require('passport');
 const LocalStrategy = require('passport-local');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const Helmet = require('helmet')
 
 const MongoStore = require('connect-mongo'); // for storing mongo session in mongoDB
-// const dbUrl = 'mongodb://localhost:27017/yelp-camp' ;
-const dbUrl = process.env.DB_URL ;
+const dbUrl = 'mongodb://localhost:27017/yelp-camp' ;
+// const dbUrl = process.env.DB_URL ;
 
 const mongoSanitize = require('express-mongo-sanitize');
 
@@ -125,6 +126,34 @@ app.use(
 app.use(Passport.initialize());
 app.use(Passport.session());
 Passport.use(new LocalStrategy(User.authenticate()));
+
+Passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/auth/google/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // 1) Check if there's already a user with this Google profile ID
+        let existingUser = await User.findOne({ googleId: profile.id });
+
+        if (!existingUser) {
+        // 2) If not, create a new user
+        existingUser = new User({
+            googleId: profile.id,
+            username: profile.displayName,
+          email: profile.emails?.[0]?.value // use first email if available
+        });
+        await existingUser.save();
+    }
+      // 3) Pass that user to done()
+        return done(null, existingUser);
+
+    } catch (err) {
+        return done(err, null);
+    }
+}));  
+
+
 
 // How to do you store data in particular session
 Passport.serializeUser(User.serializeUser());
