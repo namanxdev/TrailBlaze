@@ -1,47 +1,79 @@
-<%- layout('/layouts/boilerplate') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/login.css">
+  <!-- Boxicons icons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <title>Register</title>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="login-box">
+      <div class="login-header">
+        <span>Register</span>
+      </div>
 
-<div class="container d-flex justify-content-center align-items-center mt-5">
-    <div class="row">
-        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 mb-3">
-            <div class="card shadow">
-                <div class="card-body">
-                    <img src="https://images.unsplash.com/photo-1533575770077-052fa2c609fc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt=""
-                    class="card-img-top">
-                    <h5 class="card-title">Register</h5>
-                    <!-- Example in EJS template -->
-                    <a href="/auth/google" class="btn btn-google google-btn justify-content-center">
-                        <img src="Images/google.png" alt="Google Logo">
-                        Register Using Google
-                    </a>
-                    <span class="d-block text-center mt-3">
-                        <p class="text-center">OR</p>
-                    </span>
-                    <form action="/register" method="POST" class="validated-form" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" required autofocus>
-                            <div class="valid-feedback">
-                                Looks Good!
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="email">Email</label>
-                            <input class="form-control" type="email" id="email" name="email" required>
-                            <div class="valid-feedback">
-                                Looks Good!
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="password">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" required>
-                            <div class="valid-feedback">
-                                Looks Good!
-                            </div>
-                        </div>
-                        <button class="btn btn-success w-100 ">Register</button>
-                    </form>
-                </div>
-            </div>
+      <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger" role="alert">
+          <%= error.join(', ') %>
         </div>
+      <% } %>
+
+      <form action="/register" method="POST" class="validated-form" novalidate>
+        <!-- Username Field -->
+        <div class="input-box">
+          <input type="text" id="username" name="username" class="input-field" 
+                 required minlength="3" 
+                 pattern="^[a-zA-Z0-9_-]{3,16}$" 
+                 title="Username must be 3-16 characters, letters, numbers, underscores or hyphens"
+                 >
+          <label for="username" class="label">Username</label>
+          <i class='bx bx-user icon'></i>
+        </div>
+        
+        <!-- Email Field -->
+        <div class="input-box">
+          <input type="email" id="email" name="email" class="input-field" 
+                 required >
+          <label for="email" class="label">Email</label>
+          <i class='bx bx-envelope icon'></i>
+        </div>
+        
+        <!-- Password Field -->
+        <div class="input-box">
+          <input type="password" id="password" name="password" class="input-field" 
+                 required minlength="6" 
+                 title="Password must be at least 6 characters"
+                 >
+          <label for="password" class="label">Password</label>
+          <i class='bx bx-lock-alt icon'></i>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="input-box">
+          <input type="submit" value="Register" class="submit-btn">
+          <!-- <img class="party" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAhZJREFUSEvFlotRw0AMRJVKgEoglQCVAJUQKiFUQjoBv+Bl1orOZ0NmcjOZxI5PT1p9zpu40NqcifsQEbcR8RYRh/Eza/pc4OeIeBpJ+4h47MHXgDGuhXE+WkQM+Hq88TJ8+/Mn0S8B3w0yvhe6AQbgDnwa/GYu6iXg18EAEbHIH0uR8duldSe3yamJ7z0wAKJg7cbc8TtLyz3yej/AgLNmbffAuWiIwhdqAHIFspNFljpejblVBBjIeasiJx04qLQ4GAf57Ocidpm1OVfrVxnOT9GRGuCoRgqkCjWxnQO7zBjQRo9aYCAMD6R3gKslH7tgWoiNko5rjLqUuvbAvaUchmPqgkMrYpdZ8roCcwMi933ZVi2wQ3yjVMDzFtz3KsLcDc1ec0CuZJeygldS0+PUwe+qIs7VnI3zv/KtyFXBXAvMPfX4saB64CxV1b8Z7mOT3uZaraRTa6JcFbHL3Opf7mc4IPWv9rl6E7kzOFfzlR0QVT4zXMXkp5b3OvDjymCXWdJ4sZwUyWgnTyc5wLeGyMTxDPahAVgbfSL5OPR6aZ3bZZAOroaGNmHU4dynanGC/3jfqk4pPcfU8heGidRUI8ZZ1bTBMR2DHmn1G6c+rLpPnvGIq/z6Br1J6m0kG+vCWn3sOVIel8g4G1lLmlxc1bj7V2RLwVVfqkD+FNlSsFexzmKNv15Brfq/97K3ytiahy8G/gZ8658fUamw5wAAAABJRU5ErkJggg=="/> -->
+        </div>
+      </form>            
+            
+      <div class="google">
+        <a href="/auth/google" class="google-btn">
+          <img src="Images/google.png" alt="Google Logo">
+          Register with Google
+        </a>
+      </div>
+      
+      <div class="register">
+        <span>Already have an account? 
+          <a href="./login">Login</a>
+        </span>
+      </div>
     </div>
-</div>
+  </div>
+</body>
+</html>

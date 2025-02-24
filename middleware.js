@@ -4,6 +4,7 @@ const {CampgroundSchema,reviewSchema} = require('./Schema')
 const ExpressError = require('./utils/ExpressError');
 const Campground = require('./models/campground');
 const Review = require('./models/review');
+const mongoose = require('mongoose'); // Add this line
 
 
 module.exports.storeReturnTo = (req, res, next) => {
@@ -40,7 +41,22 @@ module.exports.ValidateCampground = (req,res,next)=>{
 
 module.exports.IsAuthor = async(req,res,next)=>{
     const {id} = req.params
+
+
+    // Check if the ID is valid
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        req.flash('error', 'Invalid Campground ID!');
+        return res.redirect('/campgrounds');
+    }
+
     const campground = await Campground.findById(id);
+
+    // Check if campground exists
+    if (!campground) {
+        req.flash('error', 'Campground not found!');
+        return res.redirect('/campgrounds');
+    }
+
     if(!campground.author.equals(req.user._id)){
         req.flash('error','You do not have Permission to edit it')
         return res.redirect(`/campgrounds/${id}`);

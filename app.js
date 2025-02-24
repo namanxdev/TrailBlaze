@@ -93,11 +93,20 @@ const styleSrcUrls = [
     "https://use.fontawesome.com/",
     "https://cdn.jsdelivr.net",
     "https://cdn.maptiler.com/", 
+    "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css"
+    
 ];
 const connectSrcUrls = [
     "https://api.maptiler.com/", 
 ];
-const fontSrcUrls = [];
+const fontSrcUrls = [
+    "https://cdnjs.cloudflare.com/",
+    "https://unpkg.com/",
+    "https://fonts.gstatic.com/",
+    "https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css"
+];
 
 app.use(
     Helmet.contentSecurityPolicy({
@@ -185,7 +194,7 @@ app.use('/campgrounds',campgroundRoutes);
 app.use('/campgrounds/:id/reviews',reviewsRoutes);
 
 app.get('/',(req,res)=>{
-    res.render('home')
+    res.render('Home')
 });
 
 app.get('/fakeuser',async (req,res)=>{
