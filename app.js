@@ -194,7 +194,7 @@ app.use('/campgrounds',campgroundRoutes);
 app.use('/campgrounds/:id/reviews',reviewsRoutes);
 
 app.get('/',(req,res)=>{
-    res.render('Home')
+    res.render('Home1')
 });
 
 app.get('/fakeuser',async (req,res)=>{
